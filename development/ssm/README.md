@@ -1,0 +1,1 @@
+## SSM Parameters and Secret Manager
