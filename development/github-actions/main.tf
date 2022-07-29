@@ -14,10 +14,10 @@ data "aws_iam_policy_document" "github_actions_policy" {
     effect  = "Allow"
     actions = ["sts:AssumeRoleWithWebIdentity"]
     condition {
-      test     = "StringLike"
-      variable = "token.actions.githubusercontent.com:sub"
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
       values = [
-        "repo:${local.api_repo}:ref:refs/heads/*"
+        "sts.amazonaws.com"
       ]
     }
     principals {
