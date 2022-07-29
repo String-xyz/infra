@@ -1,5 +1,5 @@
 data "aws_ssm_parameter" "auth_token" {
-  name = "redis-auth-token"
+  name = "reds-auth-token"
 }
 
 resource "aws_elasticache_subnet_group" "subnet_group" {
@@ -8,7 +8,7 @@ resource "aws_elasticache_subnet_group" "subnet_group" {
 }
 
 resource "aws_elasticache_replication_group" "redis" {
-  replication_group_description = "redis cluster group"
+  description = "redis cluster group"
   replication_group_id = local.cluster_name
   node_type = "cache.t3.small"
   port = local.db_port
@@ -20,11 +20,8 @@ resource "aws_elasticache_replication_group" "redis" {
   security_group_ids = [aws_security_group.default.id,aws_security_group.client.id]
   auth_token = data.aws_ssm_parameter.auth_token.value
   transit_encryption_enabled = true
-  
-  cluster_mode {
-    replicas_per_node_group = local.num_node_groups
-    num_node_groups = local.num_node_groups
-  }
+  replicas_per_node_group = local.num_node_groups
+  num_node_groups = local.num_node_groups
 }
 
 resource "aws_ssm_parameter" "redis_host_url" {
