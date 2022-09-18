@@ -11,7 +11,7 @@ locals {
 }
 
 data "aws_kms_alias" "kms_key" {
-   name = "alias/dev-kms-key"
+   name = "alias/main-kms-key"
  }
 
 data "aws_ssm_parameter" "password" {
@@ -19,7 +19,7 @@ data "aws_ssm_parameter" "password" {
 }
 
 data "aws_ssm_parameter" "username" {
-  name = "string-rds--pg-db-username"
+  name = "string-rds-pg-db-username"
 }
 
 data "aws_ssm_parameter" "db_name" {
