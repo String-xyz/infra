@@ -102,7 +102,7 @@ resource "aws_instance" "bastion" {
 ###
 
 # data "aws_security_group" "rds_write_client_sg" {
-#   name   = "${local.env}-fief-write-master-client-RDS"
+#   name   = "${local.env}-string-write-master-client-RDS"
 #   vpc_id = data.terraform_remote_state.vpc.outputs.id
 # }
 
