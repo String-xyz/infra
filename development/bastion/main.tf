@@ -97,20 +97,16 @@ resource "aws_instance" "bastion" {
   }
 }
 
-####
-# Uncomment once postgres has been created
-###
+data "aws_security_group" "rds_write_client_sg" {
+  name   = "${local.env}-string-write-master-default-rds"
+  vpc_id = data.terraform_remote_state.vpc.outputs.id
+}
 
-# data "aws_security_group" "rds_write_client_sg" {
-#   name   = "${local.env}-string-write-master-client-RDS"
-#   vpc_id = data.terraform_remote_state.vpc.outputs.id
-# }
-
-# resource "aws_security_group_rule" "bastion_to_client_write_db_sg" {
-#   type                     = "ingress"
-#   protocol                 = "TCP"
-#   from_port                = local.db_port
-#   to_port                  = local.db_port
-#   source_security_group_id = aws_security_group.bastion_sg.id
-#   security_group_id        = data.aws_security_group.rds_write_client_sg.id
-# }
+resource "aws_security_group_rule" "bastion_to_client_write_db_sg" {
+  type                     = "ingress"
+  protocol                 = "TCP"
+  from_port                = local.db_port
+  to_port                  = local.db_port
+  source_security_group_id = aws_security_group.bastion_sg.id
+  security_group_id        = data.aws_security_group.rds_write_client_sg.id
+}
