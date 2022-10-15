@@ -1,5 +1,5 @@
 resource "aws_security_group" "tailscale" {
-  name = "${var.env}-tailscale-sg"
+  name = "${var.env}-tailscale-relay-sg"
   description = "Allow tailscale relay vpc inbound traffic"
   vpc_id = var.vpc_id
 
@@ -12,6 +12,6 @@ resource "aws_security_group" "tailscale" {
   }
 
   tags = {
-    Name = "${var.env}-tailscale-relay"
+    Name = "${var.env}-tailscale-relay-sg"
   }
 }

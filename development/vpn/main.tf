@@ -2,13 +2,13 @@ module "tailscale_vpn" {
   source = "../../modules/tailscale"
   env     = local.env
   region  = local.region
-  project = local.project
   tailnet = local.tailnet
   vpc_id = data.terraform_remote_state.vpc.outputs.id
   relayer_subnet_id = data.terraform_remote_state.vpc.outputs.public_subnet_1_id
   subnets_to_advertise = data.terraform_remote_state.vpc.outputs.private_subnet_cidrs
 }
 
+# Give access to DB through Security group
 data "aws_security_group" "client" {
   name   = "${local.env}-string-write-master-client-rds"
   vpc_id = data.terraform_remote_state.vpc.outputs.id
