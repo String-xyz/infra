@@ -18,7 +18,7 @@ terraform {
 
   backend "s3" {
     encrypt        = true
-    key            = "rds-postgres.tfstate"
+    key            = "aurora-pg-cluster.tfstate"
     bucket         = "prod-string-terraform-state"
     dynamodb_table = "prod-string-terraform-state-lock"
     region         = "us-west-2"

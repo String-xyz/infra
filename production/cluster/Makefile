@@ -1,4 +1,4 @@
-AWS_PROFILE=dev-string
+AWS_PROFILE=prod-string
 export AWS_PROFILE
 
 init:
