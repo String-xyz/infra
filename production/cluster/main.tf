@@ -61,7 +61,6 @@ module "cluster" {
   autoscaling_enabled      = true
   autoscaling_min_capacity = 1
   autoscaling_max_capacity = 5
-
   monitoring_interval           = 60
   iam_role_name                 = "${local.name}-monitor"
   iam_role_use_name_prefix      = true
