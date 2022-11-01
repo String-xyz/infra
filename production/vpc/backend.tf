@@ -11,7 +11,7 @@ terraform {
    required_providers {
     aws = { 
       source = "hashicorp/aws"
-      version = "4.14.0"
+      version = "4.37.0"
     }
   }
 
@@ -21,5 +21,6 @@ terraform {
     bucket         = "prod-string-terraform-state"
     dynamodb_table = "prod-string-terraform-state-lock"
     region         = "us-west-2"
+
   }
 }
