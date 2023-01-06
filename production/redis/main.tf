@@ -10,6 +10,7 @@ resource "aws_elasticache_subnet_group" "subnet_group" {
 resource "aws_elasticache_replication_group" "redis" {
   description = "redis cluster group"
   replication_group_id = local.cluster_name
+  engine_version = "6.2"
   node_type = "cache.r6g.large"
   port = local.db_port
   parameter_group_name = "default.redis6.x.cluster.on"
