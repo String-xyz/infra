@@ -5,7 +5,7 @@ data "aws_ssm_parameter" "tailscale_api_key" {
 
 resource "aws_instance" "tailscale-relay" {
   ami = "ami-0892d3c7ee96c0bf7"
-  instance_type = "t3.nano"
+  instance_type = "t3.small"
   subnet_id = var.relayer_subnet_id
   associate_public_ip_address = true
   vpc_security_group_ids = [aws_security_group.tailscale.id]
