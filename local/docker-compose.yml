@@ -1,0 +1,74 @@
+version: '3.8'
+services:
+  string-api:
+    build:
+      context: ../../string-api/
+      dockerfile: dev.Dockerfile
+    container_name: string-api
+    ports:
+      - 5555:5555
+    depends_on:
+      redis:
+        condition: service_started
+      db:
+        condition: service_healthy
+    volumes:
+      - ../../string-api/:/string_api
+    healthcheck:
+      test: curl --fail http://localhost:5555/heartbeat || exit 1
+      start_period: 15s
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  db:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=string_db
+      - POSTGRES_PASSWORD=string_password
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U string_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  platform-api:
+    build:
+      context: ../../platform-admin-api/
+      dockerfile: cmd/app/Dockerfile
+    container_name: platform-admin-api
+    ports:
+      - 5556:5556
+    depends_on:
+      redis:
+        condition: service_started
+      db:
+        condition: service_healthy
+      string-api:
+        condition: service_healthy
+    volumes:
+      - ../../platform-admin-api/:/platform_admin_api
+  redis:
+    image: redis:7.0-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    ## We want the Redis data not to persist. 
+    ## Commenting out the lines below is equivalent to run the command FLUSHALL after each restart
+    ## Uncomment the following lines to persist data
+    # volumes:
+    #   - redis:/data
+
+volumes:
+  db:
+    driver: local
+    ## We want the Redis data not to persist. 
+    ## Commenting out the lines below is equivalent to run the command FLUSHALL after each restart
+    ## Uncomment the following lines to persist data
+    # redis:
+    #   driver: local
