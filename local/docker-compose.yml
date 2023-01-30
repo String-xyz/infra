@@ -14,6 +14,12 @@ services:
         condition: service_healthy
     volumes:
       - ../../string-api/:/string_api
+    healthcheck:
+      test: curl --fail http://localhost:5555/heartbeat || exit 1
+      start_period: 15s
+      interval: 5s
+      timeout: 5s
+      retries: 5
   db:
     image: postgres:14.1-alpine
     restart: always
@@ -41,6 +47,8 @@ services:
       redis:
         condition: service_started
       db:
+        condition: service_healthy
+      string-api:
         condition: service_healthy
     volumes:
       - ../../platform-admin-api/:/platform_admin_api
