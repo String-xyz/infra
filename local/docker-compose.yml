@@ -39,7 +39,7 @@ services:
   platform-api:
     build:
       context: ../../platform-admin-api/
-      dockerfile: cmd/app/Dockerfile
+      dockerfile: local.Dockerfile
     container_name: platform-admin-api
     ports:
       - 5556:5556
