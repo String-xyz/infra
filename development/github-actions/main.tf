@@ -57,6 +57,26 @@ data "aws_iam_policy_document" "github_actions" {
     # TODO: specific
     resources = ["*"]
   }
+
+  statement { 
+    actions = [ 
+      "s3:GetObject",
+      "s3:ListBucket",
+      "s3:PutObject"
+    ]
+
+    resources = [
+      "arn:aws:s3:::dashboard.dev.string-api.xyz",
+      "arn:aws:s3:::dashboard.dev.string-api.xyz/*"
+    ]
+  }
+
+  statement {
+    actions = [
+      "cloudfront:CreateInvalidation"
+    ]
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_policy" "github_actions" {
