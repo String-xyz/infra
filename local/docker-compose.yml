@@ -6,7 +6,8 @@ services:
       dockerfile: dev.Dockerfile
     container_name: string-api
     ports:
-      - 5555:5555
+      - 5555:5555 # api port
+      - 2346:2346 # debug port
     depends_on:
       redis:
         condition: service_started
@@ -19,7 +20,7 @@ services:
       start_period: 15s
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
   db:
     image: postgres:14.1-alpine
     restart: always
@@ -31,7 +32,7 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U string_db"]
+      test: [ "CMD-SHELL", "pg_isready -U string_db" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -42,7 +43,8 @@ services:
       dockerfile: local.Dockerfile
     container_name: platform-admin-api
     ports:
-      - 5556:5556
+      - 5556:5556 # api port
+      - 2345:2345 # debug port
     depends_on:
       redis:
         condition: service_started
