@@ -6,7 +6,7 @@ services:
       dockerfile: dev.Dockerfile
     container_name: string-api
     ports:
-      - 4444:5555 # api port
+      - 5555:5555 # api port
       - 2346:2346 # debug port
     depends_on:
       redis:
