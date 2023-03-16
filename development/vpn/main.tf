@@ -14,6 +14,11 @@ data "aws_security_group" "client" {
   vpc_id = data.terraform_remote_state.vpc.outputs.id
 }
 
+data "aws_security_group" "sandbox" {
+  name   = "sandbox-string-write-master-client-rds"
+  vpc_id = data.terraform_remote_state.vpc.outputs.id
+}
+
 resource "aws_security_group_rule" "client_write_db_sg" {
   type                     = "ingress"
   protocol                 = "TCP"
@@ -21,4 +26,13 @@ resource "aws_security_group_rule" "client_write_db_sg" {
   to_port                  = local.db_port
   source_security_group_id = module.tailscale_vpn.security_group_id
   security_group_id        = data.aws_security_group.client.id
+}
+
+resource "aws_security_group_rule" "sandbox_write_db_sg" {
+  type                     = "egress"
+  protocol                 = "TCP"
+  from_port                = local.db_port
+  to_port                  = local.db_port
+  source_security_group_id = module.tailscale_vpn.security_group_id
+  security_group_id        = data.aws_security_group.sandbox.id
 }
