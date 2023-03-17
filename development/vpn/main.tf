@@ -29,7 +29,7 @@ resource "aws_security_group_rule" "client_write_db_sg" {
 }
 
 resource "aws_security_group_rule" "sandbox_write_db_sg" {
-  type                     = "egress"
+  type                     = "ingress"
   protocol                 = "TCP"
   from_port                = local.db_port
   to_port                  = local.db_port
