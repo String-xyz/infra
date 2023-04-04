@@ -43,6 +43,10 @@ data "aws_iam_policy_document" "github_actions" {
       "ecr:PutImage",
       "ecr:UploadLayerPart",
       "ecs:UpdateService",
+      "ecs:DescribeServices",
+      "ecs:DescribeTaskDefinition",
+      "ecs:RegisterTaskDefinition",
+      "iam:PassRole"
     ]
 
     # TODO: specific
