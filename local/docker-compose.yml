@@ -1,9 +1,18 @@
 version: '3.8'
 services:
+  migrations:
+    build:
+      context: ../../migrations/
+      dockerfile: local.Dockerfile
+    container_name: migrations
+    depends_on:
+      db:
+        condition: service_healthy
+
   string-api:
     build:
       context: ../../string-api/
-      dockerfile: dev.Dockerfile
+      dockerfile: local.Dockerfile
     container_name: string-api
     ports:
       - 5555:5555 # api port
@@ -15,12 +24,7 @@ services:
         condition: service_healthy
     volumes:
       - ../../string-api/:/string_api
-    healthcheck:
-      test: curl --fail http://localhost:5555/heartbeat || exit 1
-      start_period: 15s
-      interval: 5s
-      timeout: 5s
-      retries: 10
+  
   db:
     image: postgres:14.1-alpine
     restart: always
@@ -33,9 +37,9 @@ services:
       - db:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U string_db" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      interval: 15s
+      timeout: 15s
+      retries: 50
 
   platform-api:
     build:
@@ -49,8 +53,6 @@ services:
       redis:
         condition: service_started
       db:
-        condition: service_healthy
-      string-api:
         condition: service_healthy
     volumes:
       - ../../platform-admin-api/:/platform_admin_api
