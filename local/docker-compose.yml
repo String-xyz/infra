@@ -3,7 +3,7 @@ services:
   string-api:
     build:
       context: ../../string-api/
-      dockerfile: dev.Dockerfile
+      dockerfile: local.Dockerfile
     container_name: string-api
     ports:
       - 5555:5555 # api port
@@ -18,9 +18,10 @@ services:
     healthcheck:
       test: curl --fail http://localhost:5555/heartbeat || exit 1
       start_period: 15s
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      interval: 20s
+      timeout: 20s
+      retries: 50
+  
   db:
     image: postgres:14.1-alpine
     restart: always
@@ -54,6 +55,7 @@ services:
         condition: service_healthy
     volumes:
       - ../../platform-admin-api/:/platform_admin_api
+  
   redis:
     image: redis:7.0-alpine
     restart: always
