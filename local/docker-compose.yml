@@ -1,5 +1,14 @@
 version: '3.8'
 services:
+  migrations:
+    build:
+      context: ../../migrations/
+      dockerfile: local.Dockerfile
+    container_name: migrations
+    depends_on:
+      db:
+        condition: service_healthy
+
   string-api:
     build:
       context: ../../string-api/
@@ -13,30 +22,10 @@ services:
         condition: service_started
       db:
         condition: service_healthy
+      migrations:
+        condition: service_started
     volumes:
       - ../../string-api/:/string_api
-    healthcheck:
-      test: curl --fail http://localhost:5555/heartbeat || exit 1
-      start_period: 15s
-      interval: 20s
-      timeout: 20s
-      retries: 50
-  
-  db:
-    image: postgres:14.1-alpine
-    restart: always
-    environment:
-      - POSTGRES_USER=string_db
-      - POSTGRES_PASSWORD=string_password
-    ports:
-      - '5432:5432'
-    volumes:
-      - db:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U string_db" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
   platform-api:
     build:
@@ -51,11 +40,27 @@ services:
         condition: service_started
       db:
         condition: service_healthy
-      string-api:
-        condition: service_healthy
+      migrations:
+        condition: service_started
     volumes:
       - ../../platform-admin-api/:/platform_admin_api
-  
+
+  db:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=string_db
+      - POSTGRES_PASSWORD=string_password
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U string_db" ]
+      interval: 15s
+      timeout: 15s
+      retries: 50
+
   redis:
     image: redis:7.0-alpine
     restart: always
