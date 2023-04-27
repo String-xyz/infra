@@ -1,5 +1,33 @@
 version: '3.8'
 services:
+  db:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=string_db
+      - POSTGRES_PASSWORD=string_password
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U string_db" ]
+      interval: 15s
+      timeout: 15s
+      retries: 50
+
+  redis:
+    image: redis:7.0-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    ## We want the Redis data not to persist. 
+    ## Commenting out the lines below is equivalent to run the command FLUSHALL after each restart
+    ## Uncomment the following lines to persist data
+    # volumes:
+    #   - redis:/data
+
   migrations:
     build:
       context: ../../migrations/
@@ -44,34 +72,6 @@ services:
         condition: service_started
     volumes:
       - ../../platform-admin-api/:/platform_admin_api
-
-  db:
-    image: postgres:14.1-alpine
-    restart: always
-    environment:
-      - POSTGRES_USER=string_db
-      - POSTGRES_PASSWORD=string_password
-    ports:
-      - '5432:5432'
-    volumes:
-      - db:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U string_db" ]
-      interval: 15s
-      timeout: 15s
-      retries: 50
-
-  redis:
-    image: redis:7.0-alpine
-    restart: always
-    ports:
-      - '6379:6379'
-    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
-    ## We want the Redis data not to persist. 
-    ## Commenting out the lines below is equivalent to run the command FLUSHALL after each restart
-    ## Uncomment the following lines to persist data
-    # volumes:
-    #   - redis:/data
 
 volumes:
   db:
