@@ -55,11 +55,11 @@ services:
     volumes:
       - ../../string-api/:/string_api
 
-  platform-api:
+  dashboard-api:
     build:
-      context: ../../platform-admin-api/
+      context: ../../dashboard-api/
       dockerfile: local.Dockerfile
-    container_name: platform-admin-api
+    container_name: dashboard-api
     ports:
       - 5556:5556 # api port
       - 2345:2345 # debug port
@@ -71,7 +71,7 @@ services:
       migrations:
         condition: service_started
     volumes:
-      - ../../platform-admin-api/:/platform_admin_api
+      - ../../dashboard-api/:/dashboard_api
 
 volumes:
   db:
