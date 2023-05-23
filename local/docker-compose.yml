@@ -1,5 +1,42 @@
 version: '3.8'
 services:
+  db:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=string_db
+      - POSTGRES_PASSWORD=string_password
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U string_db" ]
+      interval: 15s
+      timeout: 15s
+      retries: 50
+
+  redis:
+    image: redis:7.0-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    ## We want the Redis data not to persist. 
+    ## Commenting out the lines below is equivalent to run the command FLUSHALL after each restart
+    ## Uncomment the following lines to persist data
+    # volumes:
+    #   - redis:/data
+
+  migrations:
+    build:
+      context: ../../migrations/
+      dockerfile: local.Dockerfile
+    container_name: migrations
+    depends_on:
+      db:
+        condition: service_healthy
+
   string-api:
     build:
       context: ../../string-api/
@@ -13,36 +50,16 @@ services:
         condition: service_started
       db:
         condition: service_healthy
+      migrations:
+        condition: service_started
     volumes:
       - ../../string-api/:/string_api
-    healthcheck:
-      test: curl --fail http://localhost:5555/heartbeat || exit 1
-      start_period: 15s
-      interval: 20s
-      timeout: 20s
-      retries: 50
-  
-  db:
-    image: postgres:14.1-alpine
-    restart: always
-    environment:
-      - POSTGRES_USER=string_db
-      - POSTGRES_PASSWORD=string_password
-    ports:
-      - '5432:5432'
-    volumes:
-      - db:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U string_db" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
-  platform-api:
+  dashboard-api:
     build:
-      context: ../../platform-admin-api/
+      context: ../../dashboard-api/
       dockerfile: local.Dockerfile
-    container_name: platform-admin-api
+    container_name: dashboard-api
     ports:
       - 5556:5556 # api port
       - 2345:2345 # debug port
@@ -51,22 +68,10 @@ services:
         condition: service_started
       db:
         condition: service_healthy
-      string-api:
-        condition: service_healthy
+      migrations:
+        condition: service_started
     volumes:
-      - ../../platform-admin-api/:/platform_admin_api
-  
-  redis:
-    image: redis:7.0-alpine
-    restart: always
-    ports:
-      - '6379:6379'
-    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
-    ## We want the Redis data not to persist. 
-    ## Commenting out the lines below is equivalent to run the command FLUSHALL after each restart
-    ## Uncomment the following lines to persist data
-    # volumes:
-    #   - redis:/data
+      - ../../dashboard-api/:/dashboard_api
 
 volumes:
   db:
